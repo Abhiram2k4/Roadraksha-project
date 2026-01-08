@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Road Raksha - Admin Console</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary-color: #137fec;
+            --bg-light: #f6f7f8;
+            --bg-dark: #101922;
+            --sidebar-light: #ffffff;
+            --sidebar-dark: #1a2632;
+            --border-light: #f0f2f4;
+            --border-dark: #2a3642;
+            --text-primary-light: #111418;
+            --text-primary-dark: #ffffff;
+            --text-secondary-light: #6b7280;
+            /* Gray 500 equivalent */
+            --text-secondary-dark: #9ca3af;
+            /* Gray 400 equivalent */
+            --hover-light: #f0f2f4;
+            --hover-dark: #2a3642;
+            --font-family: 'Public Sans', sans-serif;
+        }
+
+        /* Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-light);
+            color: var(--text-primary-light);
+            overflow: hidden;
+            /* Matches overflow-hidden on body */
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            /* For layout container */
+        }
+
+        /* Layout Container */
+        .layout-container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Sidebar */
+        /* ===== ASIDE (Sidebar) styles copied from second code ===== */
+
+        aside {
+            width: 260px;
+            background-color: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            height: 6rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem;
+        }
+
+        .sidebar-header .icon {
+            font-size: 2.25rem;
+            color: #3b82f6;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin: 0;
+        }
+
+        .sidebar-header span {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: #6b7280;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link .material-icons-round {
+            font-size: 1.25rem;
+        }
+
+        .nav-link:hover {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .nav-link.active {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .logout-link:hover {
+            background-color: #fef2f2;
+            color: #dc2626;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Top Navbar */
+        .top-navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--border-light);
+            padding: 1rem 2rem;
+            /* px-8 py-4 */
+            background-color: var(--sidebar-light);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-primary-light);
+        }
+
+        .navbar-logo {
+            width: 1rem;
+            height: 1rem;
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+
+            /* sm breakpoint */
+            .navbar-logo {
+                display: block;
+            }
+        }
+
+        .navbar-logo svg {
+            fill: currentColor;
+        }
+
+        .navbar-title {
+            color: var(--text-primary-light);
+            font-size: 1.125rem;
+            /* lg */
+            font-weight: 700;
+            /* bold */
+            line-height: 1.25;
+            /* tight */
+            letter-spacing: -0.015em;
+        }
+
+        .navbar-right {
+            display: flex;
+            flex: 1;
+            justify-content: flex-end;
+            gap: 2rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            text-align: right;
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+
+            /* sm breakpoint */
+            .user-info {
+                display: block;
+            }
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            /* sm */
+            font-weight: 500;
+            /* medium */
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            /* xs */
+            color: var(--text-secondary-light);
+        }
+
+        .user-avatar {
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            border-radius: 9999px;
+            /* full */
+            width: 2.5rem;
+            /* size-10 */
+            height: 2.5rem;
+            border: 2px solid rgba(19, 127, 236, 0.2);
+            /* primary/20 */
+            /* Placeholder image set inline in HTML */
+        }
+
+        /* Scrollable Content */
+        .content-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            background-color: var(--bg-light);
+            padding: 1.5rem;
+            /* p-6 */
+        }
+
+        @media (min-width: 768px) {
+
+            /* md breakpoint */
+            .content-scroll-area {
+                padding: 2.5rem;
+                /* p-10 */
+            }
+        }
+
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Page Heading */
+        .page-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .page-title {
+            color: var(--text-primary-light);
+            letter-spacing: -0.025em;
+            /* tracking-light approximation */
+            font-size: 2rem;
+            /* text-[32px] */
+            font-weight: 700;
+            /* bold */
+            line-height: 1.25;
+            /* tight */
+        }
+
+        .refresh-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--sidebar-light);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #dce0e5;
+            /* specific light border */
+            font-size: 0.875rem;
+            /* sm */
+            font-weight: 500;
+            /* medium */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            /* shadow-sm */
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out;
+        }
+
+        .refresh-button:hover {
+            background-color: #f9fafb;
+            /* gray-50 */
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+
+            /* md breakpoint */
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border-radius: 0.75rem;
+            /* xl */
+            padding: 1.5rem;
+            background-color: var(--sidebar-light);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            /* shadow-sm */
+            border: 1px solid var(--border-light);
+            /* using border-light variable which is close to e5e7eb */
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stat-icon {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            /* lg */
+        }
+
+        .stat-icon.blue {
+            background-color: #eff6ff;
+            /* blue-50 */
+            color: var(--primary-color);
+        }
+
+        .stat-icon.green {
+            background-color: #f0fdf4;
+            /* green-50 */
+            color: #16a34a;
+            /* green-600 */
+        }
+
+        .stat-label {
+            color: var(--text-primary-light);
+            font-size: 1rem;
+            /* base */
+            font-weight: 500;
+            /* medium */
+            line-height: 1.5;
+            /* normal */
+        }
+
+        .stat-value {
+            color: var(--text-primary-light);
+            letter-spacing: -0.025em;
+            /* tracking-light */
+            font-size: 1.875rem;
+            /* 3xl */
+            font-weight: 700;
+            /* bold */
+            line-height: 1.25;
+            /* tight */
+            margin-top: 0.5rem;
+            padding-left: 0.25rem;
+        }
+
+        /* Requests Section */
+        .requests-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .section-title {
+            color: var(--text-primary-light);
+            font-size: 1.25rem;
+            /* xl */
+            font-weight: 700;
+            /* bold */
+            line-height: 1.25;
+            /* tight */
+            letter-spacing: -0.015em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .table-container {
+            background-color: var(--sidebar-light);
+            border-radius: 0.75rem;
+            /* xl */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            /* shadow-sm */
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            text-align: left;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background-color: #f9fafb;
+            /* gray-50 */
+            border-bottom: 1px solid var(--border-light);
+            /* using var for e5e7eb equivalent */
+            padding: 1rem;
+            font-size: 0.75rem;
+            /* xs */
+            font-weight: 700;
+            /* bold */
+            color: var(--text-secondary-light);
+            /* gray-500 */
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            /* wider */
+        }
+
+        .data-table th.text-right {
+            text-align: right;
+        }
+
+        .data-table tbody tr {
+            transition: background-color 0.15s ease-in-out;
+            border-bottom: 1px solid var(--border-light);
+            /* f0f2f4 equivalent */
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f9fafb;
+            /* gray-50 */
+        }
+
+        .data-table td {
+            padding: 1rem;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-initials {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 9999px;
+            /* full */
+            background-color: #e5e7eb;
+            /* gray-200 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            /* xs */
+            font-weight: 700;
+            /* bold */
+            color: #4b5563;
+            /* gray-600 */
+        }
+
+        .user-initials.blue {
+            background-color: #dbeafe;
+            /* blue-100 */
+            color: var(--primary-color);
+        }
+
+        .username-text {
+            font-weight: 500;
+            /* medium */
+            color: var(--text-primary-light);
+        }
+
+        .email-text,
+        .date-text {
+            font-size: 0.875rem;
+            /* sm */
+            color: #4b5563;
+            /* gray-600 */
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.125rem 0.625rem;
+            border-radius: 9999px;
+            /* full */
+            font-size: 0.75rem;
+            /* xs */
+            font-weight: 500;
+            /* medium */
+        }
+
+        .badge.amber {
+            background-color: #fef3c7;
+            /* amber-100 */
+            color: #92400e;
+            /* amber-800 */
+        }
+
+        .badge.blue {
+            background-color: #dbeafe;
+            /* blue-100 */
+            color: #1e40af;
+            /* blue-800 */
+        }
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.5rem;
+            /* lg */
+            font-size: 0.875rem;
+            /* sm */
+            font-weight: 500;
+            /* medium */
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .btn-reject {
+            color: #dc2626;
+            /* red-600 */
+        }
+
+        .btn-reject:hover {
+            background-color: #fef2f2;
+            /* red-50 */
+            border-color: #fecaca;
+            /* red-200 */
+        }
+
+        .btn-accept {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            /* shadow-sm */
+        }
+
+        .btn-accept:hover {
+            background-color: #2563eb;
+            /* blue-600 */
+        }
+
+        /* Pagination / Footer within Content */
+        .table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background-color: #f9fafb;
+            /* gray-50 */
+            border-top: 1px solid var(--border-light);
+            /* f0f2f4 equivalent */
+        }
+
+        .footer-text {
+            font-size: 0.875rem;
+            /* sm */
+            color: var(--text-secondary-light);
+            /* gray-500 */
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .page-btn {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+            /* sm */
+            border-radius: 0.375rem;
+            /* md */
+            border: 1px solid #d1d5db;
+            /* gray-300 */
+            background-color: #ffffff;
+            color: #4b5563;
+            /* gray-600 */
+            cursor: pointer;
+        }
+
+        .page-btn:hover {
+            background-color: #f9fafb;
+            /* gray-50 */
+        }
+
+        /* Utility Classes */
+        .text-primary {
+            color: var(--primary-color);
+        }
+
+        .text-green-600 {
+            color: #16a34a;
+        }
+
+        /* Material Symbols adjustment */
+        .material-symbols-outlined {
+            font-size: 24px;
+            /* Vertical alignment fix for icons next to text */
+            vertical-align: middle;
+        }
+
+        .btn .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        .refresh-button .material-symbols-outlined {
+            font-size: 20px;
+        }
+
+        /* Dark Mode (Class-based via 'dark' class on html/body if needed later, 
+       but standard CSS usually requires media query or a class toggle script. 
+       Adding basic support based on the provided tailwind config logic via 
+       an assumed class on root/body for switching vars) */
+
+        /* Example of Dark Mode Variables if 'dark' class is present on html */
+        html.dark {
+            --bg-light: #101922;
+            /* background-dark */
+            --bg-dark: #000000;
+            /* fallback */
+            --sidebar-light: #1a2632;
+            /* sidebar background dark */
+            --border-light: #2a3642;
+            /* border dark */
+            --text-primary-light: #ffffff;
+            --text-secondary-light: #9ca3af;
+            /* gray-400 */
+            --hover-light: #2a3642;
+        }
+
+        html.dark .sidebar-link:hover {
+            background-color: var(--hover-light);
+        }
+
+        html.dark .refresh-button {
+            background-color: #1a2632;
+            border-color: #2a3642;
+            color: #ffffff;
+        }
+
+        html.dark .refresh-button:hover {
+            background-color: #253341;
+        }
+
+        html.dark .stat-card,
+        html.dark .table-container,
+        html.dark .top-navbar,
+        html.dark .sidebar {
+            background-color: var(--sidebar-light);
+            border-color: var(--border-light);
+        }
+
+        html.dark .stat-icon.blue {
+            background-color: rgba(30, 58, 138, 0.2);
+            /* blue-900/20 */
+        }
+
+        html.dark .stat-icon.green {
+            background-color: rgba(20, 83, 45, 0.2);
+            /* green-900/20 */
+            color: #4ade80;
+            /* green-400 */
+        }
+
+        html.dark .data-table th {
+            background-color: #253341;
+            border-color: #2a3642;
+            color: #9ca3af;
+        }
+
+        html.dark .data-table tbody tr:hover {
+            background-color: #253341;
+        }
+
+        html.dark .table-footer {
+            background-color: #253341;
+            border-color: #2a3642;
+        }
+
+        html.dark .page-btn {
+            background-color: #1a2632;
+            border-color: #4b5563;
+            /* gray-600 */
+            color: #d1d5db;
+            /* gray-300 */
+        }
+
+        html.dark .page-btn:hover {
+            background-color: #2a3642;
+        }
+
+        html.dark .user-initials {
+            background-color: #374151;
+            /* gray-700 */
+            color: #d1d5db;
+            /* gray-300 */
+        }
+
+        html.dark .badge.amber {
+            background-color: rgba(120, 53, 15, 0.3);
+            /* amber-900/30 */
+            color: #fde68a;
+            /* amber-200 */
+        }
+
+        html.dark .badge.blue {
+            background-color: rgba(30, 58, 138, 0.3);
+            /* blue-900/30 */
+            color: #bfdbfe;
+            /* blue-200 */
+        }
+
+        html.dark .email-text,
+        html.dark .date-text {
+            color: #d1d5db;
+            /* gray-300 */
+        }
+
+        html.dark .btn-reject:hover {
+            background-color: rgba(127, 29, 29, 0.2);
+            /* red-900/20 */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout-container">
+        <aside>
+            <div class="sidebar-header">
+                <span class="material-icons-round icon">security</span>
+                <div class="text-center" style="text-align: left;">
+                    <h1>Road Raksha</h1>
+                    <span>Authority Panel</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a class="nav-link" href="{% url 'adminpanel' %}">
+                    <span class="material-icons-round">dashboard</span>
+                    Report Dashboard
+                </a>
+                <a class="nav-link active" href="{% url 'adminpanel_valid' %}">
+                    <span class="material-icons-round">verified_user</span>
+                    User Validation
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a class="nav-link logout-link" href="{% url 'adminlogin' %}">
+                    <span class="material-icons-round">logout</span>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+
+
+        <main class="main-content">
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <div class="navbar-logo">
+                        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_6_319)">
+                                <path
+                                    d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+                                    style="fill: var(--primary-color);"></path>
+                            </g>
+                            <defs>
+                                <clippath id="clip0_6_319">
+                                    <rect fill="white" height="48" width="48"></rect>
+                                </clippath>
+                            </defs>
+                        </svg>
+                    </div>
+                    <h2 class="navbar-title">Admin Console</h2>
+                </div>
+                <div class="navbar-right">
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <p class="user-name">Admin User</p>
+                            <p class="user-role">Super Admin</p>
+                        </div>
+                        <div class="user-avatar"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDd2BEq2QtHZUgKu1zf0bBCgt-0qbQdfZP19PmAlKCjN3L1GowL5N5z5yD284lujx2U4REA-IU78UD1Z4GLYOL4Ih8B0WpiVbYr_Jb7cGY5gzfxR1_S4rX88mDRkfQiGYIubZJmPB5pJzv6LRYVw8uxGhLBAFDvt-NfO1bR22pwu_iBPh09Ybd4JV235PBLdI_jI6Bd_iNmL7jLcczEkwOf3qtLXIq9pcz6oiNfkvTm0efprY9_ctTYiHFkq1Vj-9gnj5uFjbEuo34");'>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-scroll-area">
+                <div class="content-wrapper">
+                    <div class="page-header">
+                        <h1 class="page-title">User Validation Overview</h1>
+                        <button class="refresh-button">
+                            <span class="material-symbols-outlined">refresh</span>
+                            Refresh Data
+                        </button>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon blue">
+                                    <span class="material-symbols-outlined">pending_actions</span>
+                                </div>
+                                <p class="stat-label">Total Number of Requests</p>
+                            </div>
+                            <p class="stat-value">{{ total_requests }}</p>
+
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon green">
+                                    <span class="material-symbols-outlined">groups</span>
+                                </div>
+                                <p class="stat-label">Number of Existing Authorities</p>
+                            </div>
+                            <p class="stat-value">{{ total_authorities }}</p>
+                        </div>
+                    </div>
+
+                    <div class="requests-container">
+                        <h3 class="section-title">
+                            <span class="material-symbols-outlined text-primary">hourglass_top</span>
+                            Pending Requests
+                        </h3>
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Type</th>
+                                            <th>Date</th>
+                                            <th class="text-right">Validate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for profile in pending_profiles %}
+                                        <tr>
+                                            <td>
+                                                <div class="user-cell">
+                                                    <div class="user-initials">
+                                                        {{ profile.user.username|slice:":2"|upper }}
+                                                    </div>
+                                                    <span class="username-text">{{ profile.user.username }}</span>
+                                                </div>
+                                            </td>
+
+                                            <td class="email-text">{{ profile.user.email }}</td>
+
+                                            <td>
+                                                {% if profile.authority_type == "ROAD" %}
+                                                <span class="badge amber">Road Authority</span>
+                                                {% else %}
+                                                <span class="badge blue">Water Authority</span>
+                                                {% endif %}
+                                            </td>
+
+                                            <td class="date-text">
+                                                {{ profile.created_at|date:"M d, Y" }}
+                                            </td>
+
+                                            <td>
+                                                <div class="action-buttons">
+
+                                                    <!-- REJECT -->
+                                                    <form method="POST" style="display:inline;">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                                                        <input type="hidden" name="action" value="reject">
+                                                        <button class="btn btn-reject" type="submit">
+                                                            <span class="material-symbols-outlined">close</span>
+                                                            Reject
+                                                        </button>
+                                                    </form>
+
+                                                    <!-- ACCEPT -->
+                                                    <form method="POST" style="display:inline;">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                                                        <input type="hidden" name="action" value="accept">
+                                                        <button class="btn btn-accept" type="submit">
+                                                            <span class="material-symbols-outlined">check</span>
+                                                            Accept
+                                                        </button>
+                                                    </form>
+
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="5" style="text-align:center; padding:20px;">
+                                                No pending requests
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            <!--<div class="table-footer">
+                                <p class="footer-text">Showing 3 of 12 pending requests</p>
+                                <div class="pagination-controls">
+                                    <button class="page-btn">Previous</button>
+                                    <button class="page-btn">Next</button>
+                                </div>
+                            </div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

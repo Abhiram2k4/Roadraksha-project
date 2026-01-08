@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Road Raksha - Authority Login</title>
+    
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <style>
+        :root {
+            --primary: #137fec;
+            --primary-light: rgba(19, 127, 236, 0.1);
+            --bg-light: #f6f7f8;
+            --bg-white: #ffffff;
+            --text-dark: #111418;
+            --text-muted: #617589;
+            --border-color: #dbe0e6;
+            --border-light: #f0f2f4;
+            --font-family: "Public Sans", sans-serif;
+            --radius: 0.5rem; /* rounded-lg */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--bg-white);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .header-left { display: flex; align-items: center; gap: 0.75rem; }
+
+        .logo-icon {
+            width: 2.5rem; height: 2.5rem;
+            border-radius: var(--radius);
+            background-color: var(--primary-light);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary);
+        }
+
+        .app-title {
+            font-size: 1.125rem; font-weight: 700;
+            color: var(--text-dark); line-height: 1.25;
+        }
+
+        .btn-header {
+            display: none; /* Hidden on mobile */
+            cursor: pointer; align-items: center; justify-content: center;
+            height: 2.5rem; padding: 0 1rem;
+            border-radius: var(--radius);
+            background-color: var(--primary-light); color: var(--primary);
+            border: none; font-weight: 700; font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-header:hover { background-color: rgba(19, 127, 236, 0.2); }
+
+        @media (min-width: 640px) { .btn-header { display: flex; } }
+
+        /* Main Layout */
+        .main-container {
+            flex: 1; display: flex;
+            align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+
+        @media (min-width: 1024px) { .main-container { padding: 2rem; } }
+
+        .login-card {
+            width: 100%; max-width: 1000px;
+            background-color: var(--bg-white);
+            border-radius: 0.75rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            display: grid; grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 1024px) { .login-card { grid-template-columns: 1fr 1fr; } }
+
+        /* Form Section */
+        .form-section {
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 2rem; gap: 2rem;
+        }
+
+        @media (min-width: 1024px) { .form-section { padding: 3rem; } }
+
+        .form-header h1 {
+            font-size: 1.875rem; font-weight: 900;
+            color: var(--text-dark); line-height: 1.25; margin-bottom: 0.5rem;
+        }
+
+        .form-header p { color: var(--text-muted); font-size: 1rem; }
+
+        /* Login Form Styles */
+        .login-form {
+            display: flex; flex-direction: column; gap: 1.5rem;
+        }
+
+        /* Jurisdiction Toggle */
+        .jurisdiction-group { display: flex; flex-direction: column; gap: 0.75rem; }
+
+        .toggle-container {
+            height: 3rem; width: 100%;
+            display: flex; align-items: center;
+            background-color: var(--border-light);
+            border-radius: var(--radius); padding: 0.25rem;
+        }
+
+        .toggle-option {
+            flex: 1; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; border-radius: var(--radius);
+            font-size: 0.875rem; font-weight: 700;
+            color: var(--text-muted); transition: all 0.2s;
+            position: relative; user-select: none; 
+        }
+
+        .radio-input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+        .toggle-content {
+            display: flex; align-items: center; gap: 0.5rem;
+            white-space: nowrap; overflow: hidden;
+        }
+
+        .toggle-option:has(.radio-input:checked) {
+            background-color: var(--bg-white);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            color: var(--primary);
+        }
+
+        /* Form Inputs */
+        .form-group {
+            display: flex; flex-direction: column;
+            gap: 0.375rem; width: 100%;
+        }
+
+        .input-label {
+            font-size: 1rem; font-weight: 500; color: var(--text-dark);
+        }
+
+        .label-row { display: flex; justify-content: space-between; align-items: center; }
+
+        .input-wrapper { position: relative; }
+
+        .input-icon {
+            position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); display: flex; align-items: center;
+        }
+
+        .form-input {
+            width: 100%; height: 3.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-white);
+            padding-left: 2.75rem; padding-right: 1rem;
+            font-size: 1rem; color: var(--text-dark);
+            font-family: inherit; transition: border 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        #passwordInput { padding-right: 3rem; }
+
+        .password-toggle {
+            position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--text-muted);
+            cursor: pointer; display: flex; align-items: center;
+        }
+
+        .password-toggle:hover { color: var(--primary); }
+
+        /* Form Buttons */
+        .form-actions {
+            display: flex; flex-direction: column;
+            gap: 1rem; margin-top: 0.5rem;
+        }
+
+        .btn-primary {
+            width: 100%; height: 3rem;
+            border-radius: var(--radius);
+            background-color: var(--primary); color: #fff;
+            font-size: 1rem; font-weight: 700; border: none;
+            cursor: pointer; transition: background-color 0.2s;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-primary:hover { background-color: #116ecf; }
+
+        .links-row {
+            display: flex; justify-content: space-between;
+            align-items: center; font-size: 0.875rem;
+        }
+
+        .link-muted { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+        .link-muted:hover { color: var(--primary); }
+        .link-primary { color: var(--primary); font-weight: 700; text-decoration: none; }
+        .link-primary:hover { text-decoration: underline; }
+
+        /* Right Section */
+        .image-section {
+            display: none; position: relative; flex-direction: column;
+            justify-content: flex-end; padding: 3rem;
+            background-size: cover; background-position: center; min-height: 600px;
+            background-image: linear-gradient(180deg, rgba(19, 127, 236, 0.2) 0%, rgba(16, 25, 34, 0.9) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOpY-Id16UskoCc_HN90GFC0BK8mrfHeuHepcf8RKPWg_eWK1QWwNcOoG6CRBbS0lMOXIpdgCltYYYmdy366oyh4MDnwue0RS-rb5KMzg1apy_N3avhMOnd2HVfgWNhLDfs7aaGLwuxowVEcAEdnFAOGfcHYGXJTUN35lNke-sLb2ccAe5yyxwj0N7STtZKjUZHZcDy1iHKNTgdR4TU7-Y_UlrbteXVViUW-kJ4dbqCv2AuYDJrOWa3X9LIDt3vfC-X4Ip8_Joihk");
+        }
+
+        @media (min-width: 1024px) { .image-section { display: flex; } }
+
+        .overlay-content {
+            position: relative; z-index: 10;
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+
+        .tags { display: flex; gap: 0.5rem; }
+
+        .tag {
+            background-color: rgba(255, 255, 255, 0.2); backdrop-filter: blur(4px);
+            color: #fff; font-size: 0.75rem; font-weight: 500;
+            padding: 0.25rem 0.5rem; border-radius: 0.375rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .overlay-title {
+            color: #fff; font-size: 1.875rem; font-weight: 700;
+            line-height: 1.25; max-width: 400px;
+        }
+
+        .overlay-text {
+            color: #e5e7eb; font-size: 1rem; font-weight: 500; max-width: 440px;
+        }
+
+        footer { padding: 1.5rem 1rem; text-align: center; }
+        footer p { color: var(--text-muted); font-size: 0.875rem; }
+
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .material-symbols-outlined.icon-small { font-size: 20px; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-left">
+            <div class="logo-icon">
+                <span class="material-symbols-outlined">verified_user</span>
+            </div>
+            <h2 class="app-title">Road Raksha Authority Portal</h2>
+        </div>
+        <a href="{% url 'index' %}" style="text-decoration: none;">
+            <button class="btn-header">
+                <span class="truncate">Go to App Homepage</span>
+            </button>
+        </a>
+    </header>
+
+    <main class="main-container">
+        <div class="login-card">
+            
+            <div class="form-section">
+                <div class="form-header">
+                    <h1>Authority Login</h1>
+                    <p>Secure access for infrastructure administrators.</p>
+                </div>
+
+                <form method="POST">
+                  {% csrf_token %}
+                    
+                  
+                  {% if messages %}
+                      {% for message in messages %}
+                        <div style="margin-bottom: 10px; color:
+                            {% if message.tags == 'error' %}red
+                            {% elif message.tags == 'warning' %}orange
+                            {% else %} green {% endif %}; ">
+                            {{ message }}
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+
+
+                    
+                  <!--  <div class="jurisdiction-group">
+                        <label class="input-label">Select Type</label>
+                        <div class="toggle-container">
+                            <label class="toggle-option">
+                                <span class="toggle-content">
+                                    <span class="material-symbols-outlined icon-small">water_drop</span>
+                                    Water Authority
+                                </span>
+                                <input checked class="radio-input" name="authority_type" type="radio" value="Water Authority"/>
+                            </label>
+                            <label class="toggle-option">
+                                <span class="toggle-content">
+                                    <span class="material-symbols-outlined icon-small">traffic</span>
+                                    Road Authority
+                                </span>
+                                <input class="radio-input" name="authority_type" type="radio" value="Road Authority"/>
+                            </label>
+                        </div>
+                    </div>
+                    -->
+
+                    <label class="form-group">
+                        <p class="input-label">Authority ID / Username</p>
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <span class="material-symbols-outlined icon-small">badge</span>
+                            </div>
+                            <input class="form-input" name="username" placeholder="Enter your ID" type="text" required />
+                        </div>
+                    </label>
+
+                    <label class="form-group">
+                        <div class="label-row">
+                            <p class="input-label">Password</p>
+                        </div>
+                        <div class="input-wrapper">
+                            <div class="input-icon">
+                                <span class="material-symbols-outlined icon-small">lock</span>
+                            </div>
+                            <input class="form-input" id="passwordInput" name="password" placeholder="Enter your password" type="password" required />
+                            <button class="password-toggle" type="button" id="togglePasswordBtn">
+                                <span class="material-symbols-outlined icon-small">visibility</span>
+                            </button>
+                        </div>
+                    </label>
+
+                    <div class="form-actions">
+                        <button class="btn-primary" type="submit">
+                            <span class="truncate">Log In to Portal</span>
+                        </button>
+                        <div class="links-row">
+                            <a class="link-muted" href="#">Forgot password?</a>
+                            <a class="link-primary" href="{%url 'authreg'%}">Register New Authority</a>
+                        </div>
+                    </div>
+
+                </form>
+                </div>
+
+            <div class="image-section">
+                <div class="overlay-content">
+                    <div class="tags">
+                        <span class="tag">Real-time Updates</span>
+                        <span class="tag">GIS Mapping</span>
+                    </div>
+                    <h2 class="overlay-title">Empowering safer roads and cleaner water for everyone.</h2>
+                    <p class="overlay-text">Access real-time reports, manage tickets, and coordinate infrastructure repairs efficiently.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2025 Road Raksha Authority. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleIcon = toggleBtn.querySelector('.material-symbols-outlined');
+
+            toggleBtn.addEventListener('click', () => {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                if (type === 'password') {
+                    toggleIcon.textContent = 'visibility';
+                } else {
+                    toggleIcon.textContent = 'visibility_off';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

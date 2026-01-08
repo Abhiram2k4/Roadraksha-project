@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Road Raksha - Admin Console</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary-color: #137fec;
+            --bg-light: #f6f7f8;
+            --bg-dark: #101922;
+            --sidebar-light: #ffffff;
+            --sidebar-dark: #1a2632;
+            --border-light: #f0f2f4;
+            --border-dark: #2a3642;
+            --text-primary-light: #111418;
+            --text-primary-dark: #ffffff;
+            --text-secondary-light: #6b7280;
+            --text-secondary-dark: #9ca3af;
+            --hover-light: #f0f2f4;
+            --hover-dark: #2a3642;
+            --font-family: 'Public Sans', sans-serif;
+
+            /* Status Colors */
+            --status-open-bg: #FEF3C7;
+            --status-open-text: #D97706;
+            --status-resolving-bg: #DBEAFE;
+            /* Blue-100 */
+            --status-resolving-text: #1E40AF;
+            /* Blue-800 */
+            --status-closed-bg: #D1FAE5;
+            --status-closed-text: #059669;
+            --status-rejected-bg: #FEE2E2;
+            --status-rejected-text: #DC2626;
+        }
+
+        /* Reset & Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-light);
+            color: var(--text-primary-light);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+        }
+
+        /* Layout Container */
+        .layout-container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Sidebar - Matching the template provided */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            width: 16rem;
+            height: 100%;
+            background-color: var(--sidebar-light);
+            border-right: 1px solid var(--border-light);
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .sidebar-title {
+            color: var(--text-primary-light);
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.5;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 0.5rem;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary-light);
+            /* Default color */
+            transition: background-color 0.15s ease-in-out;
+        }
+
+        .sidebar-link:hover {
+            background-color: var(--hover-light);
+        }
+
+        .sidebar-link p {
+            font-size: 0.875rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        /* Styles for the "active" link based on the template logic (but tailored for Authority view) */
+        .sidebar-link.active {
+            /* No specific active background in the provided snippet for the first link, 
+           but typically active links get highlighted. I'll add a subtle highlight. */
+            background-color: var(--hover-light);
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        /* Main Content Area */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Top Navbar */
+        .top-navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--border-light);
+            padding: 1rem 2rem;
+            background-color: var(--sidebar-light);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-primary-light);
+        }
+
+        .navbar-logo {
+            width: 1rem;
+            height: 1rem;
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+            .navbar-logo {
+                display: block;
+            }
+        }
+
+        .navbar-logo svg {
+            fill: currentColor;
+        }
+
+        .navbar-title {
+            color: var(--text-primary-light);
+            font-size: 1.125rem;
+            font-weight: 700;
+            line-height: 1.25;
+            letter-spacing: -0.015em;
+        }
+
+        .navbar-right {
+            display: flex;
+            flex: 1;
+            justify-content: flex-end;
+            gap: 2rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-info {
+            text-align: right;
+            display: none;
+        }
+
+        @media (min-width: 640px) {
+            .user-info {
+                display: block;
+            }
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--text-secondary-light);
+        }
+
+        .user-avatar {
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            border-radius: 9999px;
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 2px solid rgba(19, 127, 236, 0.2);
+        }
+
+        /* Scrollable Content */
+        .content-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            background-color: var(--bg-light);
+            padding: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .content-scroll-area {
+                padding: 2.5rem;
+            }
+        }
+
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .page-title {
+            color: var(--text-primary-light);
+            letter-spacing: -0.025em;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        .refresh-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--sidebar-light);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #dce0e5;
+            font-size: 0.875rem;
+            font-weight: 500;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: background-color 0.15s ease-in-out;
+        }
+
+        .refresh-button:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            background-color: var(--sidebar-light);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-light);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stat-icon {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .stat-icon.blue {
+            background-color: #eff6ff;
+            color: var(--primary-color);
+        }
+
+        .stat-icon.green {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .stat-label {
+            color: var(--text-primary-light);
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .stat-value {
+            color: var(--text-primary-light);
+            letter-spacing: -0.025em;
+            font-size: 1.875rem;
+            font-weight: 700;
+            line-height: 1.25;
+            margin-top: 0.5rem;
+            padding-left: 0.25rem;
+        }
+
+        /* Requests Section (Reused for Reports Table) */
+        .section-title {
+            color: var(--text-primary-light);
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.25;
+            letter-spacing: -0.015em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .table-container {
+            background-color: var(--sidebar-light);
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            text-align: left;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background-color: #f9fafb;
+            border-bottom: 1px solid var(--border-light);
+            padding: 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table tbody tr {
+            transition: background-color 0.15s ease-in-out;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .data-table td {
+            padding: 1rem;
+        }
+
+        .truncate-text {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #4b5563;
+        }
+
+        .map-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .map-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.125rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-open {
+            background-color: var(--status-open-bg);
+            color: var(--status-open-text);
+        }
+
+        .badge-resolving {
+            background-color: var(--status-resolving-bg);
+            color: var(--status-resolving-text);
+        }
+
+        .badge-closed {
+            background-color: var(--status-closed-bg);
+            color: var(--status-closed-text);
+        }
+
+        .badge-rejected {
+            background-color: var(--status-rejected-bg);
+            color: var(--status-rejected-text);
+        }
+
+        .date-text {
+            color: var(--text-secondary-light);
+            font-size: 0.875rem;
+        }
+
+        /* Utility */
+        .text-primary {
+            color: var(--primary-color);
+        }
+
+        .material-symbols-outlined {
+
+            font-size: 24px;
+            vertical-align: middle;
+        }
+
+        .sidebar-link .material-symbols-outlined {
+            font-size: 24px;
+        }
+
+        /* Map Modal Styling */
+        .map-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            /*display: flex;*/
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-container {
+            background: #ffffff;
+            width: 80%;
+            max-width: 900px;
+            height: 70%;
+            border-radius: 12px;
+            position: relative;
+            padding: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .map-close-btn {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            z-index: 1000;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .map-close-btn:hover {
+            background: #f3f4f6;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="layout-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">
+                    <span class="material-symbols-outlined text-primary">security</span>
+                    Road Raksha
+                </h1>
+            </div>
+            <div class="sidebar-nav">
+                <a class="sidebar-link active" href="{% url 'authority_panel' panel_type %}">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <p>Report Dashboard</p>
+                </a>
+            </div>
+            <div class="sidebar-footer">
+                <a class="sidebar-link" href="{% url 'authlogin'%}">
+                    <span class="material-symbols-outlined">logout</span>
+                    <p>Logout</p>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-navbar">
+                <div class="navbar-left">
+                    <div class="navbar-logo">
+                        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_6_319)">
+                                <path
+                                    d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+                                    style="fill: var(--primary-color);"></path>
+                            </g>
+                            <defs>
+                                <clippath id="clip0_6_319">
+                                    <rect fill="white" height="48" width="48"></rect>
+                                </clippath>
+                            </defs>
+                        </svg>
+                    </div>
+                    <h2 class="navbar-title">{{ panel_type }} Authority Console</h2>
+                </div>
+                <div class="navbar-right">
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <p class="user-name">Authority User</p>
+                            <p class="user-role">Dept. Head</p>
+                        </div>
+                        <div class="user-avatar"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDd2BEq2QtHZUgKu1zf0bBCgt-0qbQdfZP19PmAlKCjN3L1GowL5N5z5yD284lujx2U4REA-IU78UD1Z4GLYOL4Ih8B0WpiVbYr_Jb7cGY5gzfxR1_S4rX88mDRkfQiGYIubZJmPB5pJzv6LRYVw8uxGhLBAFDvt-NfO1bR22pwu_iBPh09Ybd4JV235PBLdI_jI6Bd_iNmL7jLcczEkwOf3qtLXIq9pcz6oiNfkvTm0efprY9_ctTYiHFkq1Vj-9gnj5uFjbEuo34");'>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-scroll-area">
+                <div class="content-wrapper">
+                    <div class="page-header">
+                        <h1 class="page-title">Dashboard Overview</h1>
+                        <a href="{% url 'authority_panel' panel_type %}" style="text-decoration: none;">
+                            <button class="refresh-button">
+                                <span class="material-symbols-outlined">refresh</span>
+                                Refresh Data
+                            </button>
+                        </a>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon blue">
+                                    <span class="material-symbols-outlined">folder</span>
+                                </div>
+                                <p class="stat-label">Total Reports</p>
+                            </div>
+                            <p class="stat-value">{{ total_reports }}</p>
+
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon green">
+                                    <span class="material-symbols-outlined">pending_actions</span>
+                                </div>
+                                <p class="stat-label">Open Reports</p>
+                            </div>
+                            <p class="stat-value">{{ open_reports }}</p>
+                        </div>
+                    </div>
+
+                    <div class="requests-container">
+                        <h3 class="section-title">Recent Reports</h3>
+                        <div class="table-container">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Report ID</th>
+                                            <th>Description</th>
+                                            <th>Location</th>
+                                            <th>Status</th>
+                                            <th>Resolved</th>
+                                            <th>Reported Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for report in reports %}
+                                        <tr>
+                                            <td style="font-weight: 500;">{{ report.report_id }}</td>
+
+                                            <td class="truncate-text">{{ report.description }}</td>
+
+                                            <td>
+                                                <a href="javascript:void(0);" class="map-link"
+                                                onclick="openMap({{report.latitude|floatformat:'6'}},{{report.longitude|floatformat:'6'}})" >
+                                                    <span class="material-symbols-outlined"
+                                                        style="font-size: 18px; ">location_on</span>
+                                                    View Map
+                                                </a>
+                                            </td>
+
+                                            <td>
+                                                {% if report.status %}
+                                                <span class="badge badge-closed">Closed</span>
+                                                {% else %}
+                                                <span class="badge badge-open">Open</span>
+                                                {% endif %}
+                                            </td>
+
+                                            <td>
+                                                {% if not report.status %}
+                                                <form method="post"
+                                                    action="{% url 'resolve_report' report.report_id %}">
+                                                    {% csrf_token %}
+                                                    <input type="checkbox" onchange="this.form.submit()">
+                                                </form>
+                                                {% else %}
+                                                ✔
+                                                {% endif %}
+                                            </td>
+
+
+                                            <td class="date-text">{{ report.reported_at|date:"d M Y" }}</td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="6" style="text-align:center;">No {{ panel_type|lower }} reports available.</td>
+
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="mapModal" class="map-modal">
+        <div class="map-container">
+            <button class="map-close-btn" onclick="closeMap()">✖</button>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script>
+        let map;
+        let marker;
+
+        function openMap(lat, lng) {
+            const modal = document.getElementById('mapModal');
+            modal.style.display = 'flex';
+
+            setTimeout(() => {
+                if (!map) {
+                    map = L.map('map').setView([lat, lng], 15);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap'
+                    }).addTo(map);
+
+                    marker = L.marker([lat, lng]).addTo(map);
+                } else {
+                    map.setView([lat, lng], 15);
+                    marker.setLatLng([lat, lng]);
+                }
+
+                map.invalidateSize(); // run AFTER modal is visible
+            }, 300);
+        }
+
+        function closeMap() {
+            document.getElementById('mapModal').style.display = 'none';
+        }
+    </script>
+
+
+
+</body>
+
+</html>
