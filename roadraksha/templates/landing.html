@@ -1,5 +1,8 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html class="light" lang="en">
+
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -10,209 +13,318 @@
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;700;900&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#137fec",
-                        "background-light": "#f6f7f8",
-                        "background-dark": "#101922",
-                    },
-                    fontFamily: {
-                        "display": ["Public Sans"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem", 
-                        "lg": "0.5rem", 
-                        "xl": "0.75rem", 
-                        "full": "9999px"
-                    },
-                },
-            },
-        }
-    </script>
-    
     <style>
+        /* BASE RESET & VARIABLES */
+        :root {
+            --primary: #137fec;
+            --background-light: #f6f7f8;
+            --text-gray-900: #111827;
+            --text-gray-800: #1f2937;
+            --text-gray-700: #374151;
+            --text-gray-600: #4b5563;
+            --text-gray-500: #6b7280;
+            --text-gray-400: #9ca3af;
+            --header-bg: #e3f2fd;
+            --white: #ffffff;
+            --border-gray: #e5e7eb;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-gray-800);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
         }
+
+        /* LAYOUT HELPERS */
+        .max-w-7xl { max-width: 80rem; margin-left: auto; margin-right: auto; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .w-full { width: 100%; }
+        .min-h-screen { min-height: 100vh; }
+
+        /* HEADER */
+        header {
+            background-color: var(--header-bg);
+            width: 100%;
+            position: relative;
+            z-index: 50;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1rem;
+        }
+        @media (min-width: 640px) { .header-inner { padding-left: 1.5rem; padding-right: 1.5rem; } }
+        @media (min-width: 1024px) { .header-inner { padding-left: 2rem; padding-right: 2rem; } }
+
+        .logo-container { display: flex; align-items: center; gap: 1rem; color: var(--text-gray-900); }
+        .logo-icon { width: 2.25rem; height: 2.25rem; color: var(--primary); }
+        .logo-text { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
+
+        .nav-desktop { display: none; flex: 1; justify-content: flex-end; align-items: center; gap: 2rem; }
+        @media (min-width: 768px) { .nav-desktop { display: flex; } }
+
+        .nav-links { display: flex; align-items: center; gap: 2.25rem; }
+        .nav-link { 
+            font-size: 1.125rem; font-weight: 500; color: var(--text-gray-700); 
+            text-decoration: none; transition: color 0.2s; 
+        }
+        .nav-link:hover { color: var(--primary); }
+
+        /* DROPDOWN */
+        .relative-group { position: relative; }
+        .login-btn {
+            display: flex; min-width: 84px; cursor: pointer; align-items: center; justify-content: center;
+            border-radius: 0.5rem; height: 3rem; padding-left: 1.5rem; padding-right: 1.5rem;
+            background-color: #f3f4f6; color: var(--text-gray-900); font-size: 1.125rem;
+            font-weight: 700; border: none; transition: background-color 0.2s;
+        }
+        .login-btn:hover { background-color: #e5e7eb; }
+
+        .dropdown-menu {
+            display: none; position: absolute; right: 0; top: 100%; padding-top: 0.5rem; width: 14rem; z-index: 50;
+        }
+        .relative-group:hover .dropdown-menu { display: block; }
+        
+        .dropdown-card {
+            background: var(--white); border-radius: 0.75rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-gray); overflow: hidden;
+        }
+        .dropdown-item {
+            display: block; padding: 0.75rem 1rem; font-size: 1rem; color: var(--text-gray-700);
+            text-decoration: none; transition: all 0.2s;
+        }
+        .dropdown-item:hover { background-color: rgba(19, 127, 236, 0.1); color: var(--primary); }
+        .divider { height: 1px; background-color: var(--border-gray); }
+
+        /* HERO SECTION */
+        .hero { position: relative; padding: 4rem 1rem; min-height: 500px; display: flex; align-items: center; }
+        @media (min-width: 768px) { .hero { padding: 8rem 0; } }
+
+        .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+        .hero-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: -1; }
+
+        .hero-container { 
+            display: flex; flex-direction: column-reverse; gap: 2.5rem; width: 100%;
+        }
+        @media (min-width: 864px) { 
+            .hero-container { flex-direction: row; align-items: center; } 
+            .hero-content { width: 50%; text-align: left; }
+            .hero-image-box { width: 50%; }
+        }
+
+        .hero-content { text-align: center; color: var(--white); }
+        .hero-h1 { font-size: 2.25rem; font-weight: 900; line-height: 1.2; letter-spacing: -0.033em; margin-bottom: 1rem; }
+        @media (min-width: 480px) { .hero-h1 { font-size: 3.5rem; } }
+        .hero-h2 { font-size: 1rem; font-weight: 400; color: #f3f4f6; margin-bottom: 2rem; }
+        @media (min-width: 480px) { .hero-h2 { font-size: 1.25rem; } }
+
+        .btn-flex { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.75rem; padding-left: 121px; }
+        @media (min-width: 864px) { .btn-flex { justify-content: flex-start; } }
+
+        .app-btn {
+            display: flex; min-width: 84px; cursor: pointer; align-items: center; justify-content: center;
+            border-radius: 0.5rem; height: 3rem; padding: 0 1.25rem; font-weight: 700; border: none;
+            transition: opacity 0.2s; text-decoration: none;
+        }
+        .btn-blue { background-color: var(--primary); color: var(--white); }
+        .btn-white { background-color: #f3f4f6; color: var(--text-gray-900); }
+        .app-btn:hover { opacity: 0.9; }
+
+        .hero-image-box img { width: 100%; max-width: 340px; display: block; margin: 0 auto; filter: drop-shadow(0 25px 25px rgba(0,0,0,0.2)); }
+        @media (min-width: 864px) { .hero-image-box img { max-width: 420px; } }
+
+        /* FEATURES SECTION */
+        .features-section { background-color: var(--white); padding: 5rem 1rem; }
+        .features-header { text-align: center; margin-bottom: 3.5rem; display: flex; flex-direction: column; gap: 1rem; }
+        .features-h2 { font-size: 2.25rem; font-weight: 900; color: var(--text-gray-900); letter-spacing: -0.033em; }
+        .features-p { color: var(--text-gray-600); max-width: 720px; margin: 0 auto; font-size: 1.125rem; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+        .feature-card {
+            background-color: var(--background-light); padding: 2rem; border-radius: 1rem;
+            border: 1px solid var(--border-gray); display: flex; flex-direction: column; gap: 1.25rem;
+            transition: transform 0.2s;
+        }
+        .feature-card:hover { transform: translateY(-5px); }
+        .feature-icon { color: var(--primary); font-size: 2.5rem; }
+        .feature-card h3 { font-size: 1.25rem; font-weight: 700; color: var(--text-gray-900); }
+        .feature-card p { font-size: 1rem; color: var(--text-gray-600); }
+
+        /* HOW IT WORKS */
+        .how-section { padding: 5rem 1rem; }
+        .how-h2 { font-size: 2rem; font-weight: 800; text-align: center; margin-bottom: 4rem; }
+        .steps-grid { display: grid; grid-template-columns: 40px 1fr; gap: 1rem; max-width: 800px; margin: 0 auto; }
+        
+        .step-col { display: flex; flex-direction: column; align-items: center; }
+        .step-bubble { background-color: rgba(19, 127, 236, 0.15); color: var(--primary); border-radius: 9999px; padding: 0.6rem; display: flex; }
+        .step-line { width: 2px; background-color: var(--border-gray); flex-grow: 1; }
+        
+        .step-content { padding-bottom: 4rem; }
+        .step-content:last-child { padding-bottom: 0; }
+        .step-tag { font-size: 0.875rem; font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; }
+        .step-title { font-size: 1.25rem; font-weight: 700; color: var(--text-gray-900); margin: 0.25rem 0; }
+        .step-desc { font-size: 1.05rem; color: var(--text-gray-600); }
+
+        /* FOOTER */
+        footer { background-color: var(--white); border-top: 1px solid var(--border-gray); padding: 3rem 1.5rem; }
+        .footer-inner { display: flex; flex-direction: column; align-items: center; }
+        @media (min-width: 768px) { .footer-inner { flex-direction: row-reverse; justify-content: space-between; } }
+        
+        .footer-socials { display: flex; gap: 1.5rem; margin-bottom: 2rem; }
+        @media (min-width: 768px) { .footer-socials { margin-bottom: 0; } }
+        .social-link { color: var(--text-gray-400); transition: color 0.2s; }
+        .social-link:hover { color: var(--primary); }
+        .copyright { font-size: 0.875rem; color: var(--text-gray-500); }
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
-    <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
-        <div class="layout-container flex h-full grow flex-col">
-            <div class="flex flex-1 justify-center flex-col">
-                <div class="w-full">
-                    
-                    <header class="bg-[#e3f2fd] dark:bg-[#0d1b2a] w-full relative z-50">
-                        <div class="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 lg:px-8 py-5 max-w-7xl mx-auto">
-                            <div class="flex items-center gap-4 text-gray-900 dark:text-white">
-                                <div class="size-9 text-primary">
-                                    <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                        <g clip-path="url(#clip0_6_319)">
-                                            <path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path>
-                                        </g>
-                                        <defs>
-                                            <clipPath id="clip0_6_319"><rect fill="white" height="48" width="48"></rect></clipPath>
-                                        </defs>
-                                    </svg>
-                                </div>
-                                <h2 class="text-2xl font-bold leading-tight tracking-[-0.015em]">Road Raksha</h2>
-                            </div>
-                            
-                            <div class="hidden md:flex flex-1 justify-end items-center gap-8">
-                                <nav class="flex items-center gap-9">
-                                    <a class="text-lg font-medium leading-normal text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary" href="#how_it_works">How it Works</a>
-                                    <a class="text-lg font-medium leading-normal text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary" href="{% url 'about'%}">About Us</a>
-                                </nav>
-                                
-                                <div class="relative group">
-                                    <button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-lg font-bold leading-normal tracking-[0.015em] hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                                        <span class="truncate">Login</span>
-                                        <span class="material-symbols-outlined ml-2 text-base">expand_more</span>
-                                    </button>
-
-                                    <div class="hidden group-hover:block absolute right-0 top-full pt-2 w-56 z-50">
-                                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-                                            <a href="{%url 'authlogin'%}" class="block px-4 py-3 text-base text-gray-700 dark:text-gray-200 hover:bg-primary/10 hover:text-primary dark:hover:bg-gray-700 transition-colors">
-                                                Authority Login
-                                            </a>
-                                            <div class="h-px bg-gray-100 dark:bg-gray-700"></div>
-                                            <a href="{%url 'adminlogin'%}" class="block px-4 py-3 text-base text-gray-700 dark:text-gray-200 hover:bg-primary/10 hover:text-primary dark:hover:bg-gray-700 transition-colors">
-                                                Admin Login
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                </div>
-                        </div>
-                    </header>
-
-                    <main class="flex-1">
-                        <div class="relative py-16 md:py-24 @container">
-                            <img class="absolute inset-0 w-full h-full object-cover" data-alt="Road background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD2ylWlENlx04FC9AAPnJg9cM8jebnjwm8EAgIeTpMZT8UihNPRq-6iJvJgihEQ0L1YR007Vs8FDO4h12n9hA4CJzY63FsqG_DVskR-djQRpZrMxHWyxZIwltsez2LRtpX8cI3zDXSdlwjdVIqek1FeWnw7tk2eE1bN_ePQ28WhiF8jDOPOKdICY3ZVtHctflzoi9zkL-JTVrg1KFtTPeD9a1fX-y1l9CZH81RP750tyHGLKn4RmvwBetSEpwfkutL7x9Ww_Bd87M"/>
-                            <div class="absolute inset-0 bg-black/60"></div>
-                            <div class="relative mx-auto flex max-w-7xl flex-col-reverse gap-10 px-4 @[864px]:flex-row @[864px]:items-center sm:px-6 lg:px-8">
-                                <div class="flex flex-col gap-6 text-center @[864px]:text-left @[480px]:gap-8 @[864px]:justify-center @[864px]:w-1/2">
-                                    <div class="flex flex-col gap-4">
-                                        <h1 class="text-4xl font-black leading-tight tracking-[-0.033em] text-white @[480px]:text-5xl"> Safer Roads, Together. </h1>
-                                        <h2 class="text-base font-normal leading-normal text-gray-200 @[480px]:text-lg"> Report potholes and water issues in seconds. Navigate smarter with real-time road hazard data. </h2>
-                                    </div>
-                                    <div class="flex flex-wrap justify-center gap-3 @[864px]:justify-start">
-                                        <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors">
-                                            <span class="truncate">Download on the App Store</span>
-                                        </button>
-                                        <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                                            <span class="truncate">Get it on Google Play</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="flex w-full items-center justify-center @[864px]:w-1/2">
-                                    <img class="w-full max-w-[300px] @[864px]:max-w-md" data-alt="App mockup" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD35QZyYs4ixqax197cPGGrAJC2As08YkOlkknLjbSJkXklbEzCpeihqKY0luSY7_MbsaU_nm5I05s0IO1_qOE1ybA_GywGWqPhNWrruEY7G0szB9lVUNb7Gb_W8riGWSWxg_-_TFZACNYd8GqI7k47cy52Et5n1fAVNbm4QHcsuaHeA_8AiF4Rzm2XobwuaVh_NINmHzxTCYtVAl3eGLtz-_gPaKZQXzdwhKvA3mGMIQoXcnE74A5c4ZrGzXsBc2ya-eZhNnc5TA"/>
-                                </div>
+<body>
+    <div class="min-h-screen flex flex-col">
+        <header>
+            <div class="max-w-7xl header-inner">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z" fill="currentColor"></path></svg>
+                    </div>
+                    <h2 class="logo-text">Road Raksha</h2>
+                </div>
+                
+                <div class="nav-desktop">
+                    <nav class="nav-links">
+                        <a href="#how_it_works" class="nav-link">How it Works</a>
+                        <a href="{% url 'about' %}" class="nav-link">About Us</a>
+                    </nav>
+                    <div class="relative-group">
+                        <button class="login-btn">
+                            <span>Login</span>
+                            <span class="material-symbols-outlined" style="margin-left: 0.5rem; font-size: 1.25rem;">expand_more</span>
+                        </button>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-card">
+                                <a href="{% url 'authlogin' %}" class="dropdown-item">Authority Login</a>
+                                <div class="divider"></div>
+                                <a href="{% url 'adminlogin' %}" class="dropdown-item">Admin Login</a>
                             </div>
                         </div>
-
-                        <div class="bg-white dark:bg-background-dark/50">
-                            <div class="mx-auto flex max-w-7xl flex-col gap-10 px-4 py-16 sm:px-6 lg:px-8 md:py-24 @container">
-                                <div class="flex flex-col items-center gap-4 text-center">
-                                    <h2 class="text-gray-900 dark:text-white tracking-light text-[32px] font-bold leading-tight @[480px]:text-4xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em] max-w-[720px]"> Making Every Journey Safer </h2>
-                                    <p class="text-gray-600 dark:text-gray-300 text-base font-normal leading-normal max-w-[720px]"> Road Raksha empowers you to improve your community's infrastructure with just a few taps. See how our key features contribute to better, safer roads for everyone. </p>
-                                </div>
-                                <div class="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4 p-0">
-                                    <div class="flex flex-1 flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark p-6">
-                                        <span class="material-symbols-outlined text-primary text-3xl">photo_camera</span>
-                                        <div class="flex flex-col gap-1">
-                                            <h3 class="text-gray-900 dark:text-white text-lg font-bold leading-tight">Report Instantly</h3>
-                                            <p class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal"> Quickly snap a photo, add details, and report road potholes or water issues directly from the app. </p>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-1 flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark p-6">
-                                        <span class="material-symbols-outlined text-primary text-3xl">map</span>
-                                        <div class="flex flex-col gap-1">
-                                            <h3 class="text-gray-900 dark:text-white text-lg font-bold leading-tight">Navigate with Confidence</h3>
-                                            <p class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal">Our interactive map shows you reported hazards in real-time, helping you plan safer routes.</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-1 flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark p-6">
-                                        <span class="material-symbols-outlined text-primary text-3xl">groups</span>
-                                        <div class="flex flex-col gap-1">
-                                            <h3 class="text-gray-900 dark:text-white text-lg font-bold leading-tight">Community Powered</h3>
-                                            <p class="text-gray-600 dark:text-gray-400 text-sm font-normal leading-normal">Join a network of responsible citizens and authorities working together to improve road safety.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="py-16 md:py-24" id="how_it_works">
-                            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                                <h2 class="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-[-0.015em] px-4 pb-12 pt-5 text-center">How It Works</h2>
-                                <div class="grid grid-cols-[40px_1fr] gap-x-4 px-4">
-                                    <div class="flex flex-col items-center gap-2 pt-3">
-                                        <div class="bg-primary/20 text-primary rounded-full p-2">
-                                            <span class="material-symbols-outlined">visibility</span>
-                                        </div>
-                                        <div class="w-[2px] bg-gray-200 dark:bg-gray-700 h-full grow"></div>
-                                    </div>
-                                    <div class="flex flex-1 flex-col pb-12 pt-3">
-                                        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">Step 1</p>
-                                        <p class="text-gray-900 dark:text-white text-lg font-bold leading-normal">Spot & Snap</p>
-                                        <p class="text-gray-600 dark:text-gray-300 text-base font-normal leading-normal mt-1">See a pothole or a water leak? Open the app and safely take a picture to start your report.</p>
-                                    </div>
-                                    <div class="flex flex-col items-center gap-2">
-                                        <div class="w-[2px] bg-gray-200 dark:bg-gray-700 h-full grow"></div>
-                                        <div class="bg-primary/20 text-primary rounded-full p-2">
-                                            <span class="material-symbols-outlined">pin_drop</span>
-                                        </div>
-                                        <div class="w-[2px] bg-gray-200 dark:bg-gray-700 h-full grow"></div>
-                                    </div>
-                                    <div class="flex flex-1 flex-col pb-12 pt-3">
-                                        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">Step 2</p>
-                                        <p class="text-gray-900 dark:text-white text-lg font-bold leading-normal">Pin Location & Submit</p>
-                                        <p class="text-gray-600 dark:text-gray-300 text-base font-normal leading-normal mt-1">Confirm the location with GPS, add a few details, and submit. The report is instantly sent to the relevant authorities.</p>
-                                    </div>
-                                    <div class="flex flex-col items-center gap-2 pb-3">
-                                        <div class="w-[2px] bg-gray-200 dark:bg-gray-700 h-full grow"></div>
-                                        <div class="bg-primary/20 text-primary rounded-full p-2">
-                                            <span class="material-symbols-outlined">shield</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-1 flex-col pt-3">
-                                        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium leading-normal">Step 3</p>
-                                        <p class="text-gray-900 dark:text-white text-lg font-bold leading-normal">Drive Safer</p>
-                                        <p class="text-gray-600 dark:text-gray-300 text-base font-normal leading-normal mt-1">The hazard is now visible on the public map, helping other drivers avoid the area until it's fixed.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </main>
-
-                    <footer class="bg-white dark:bg-background-dark/50">
-                        <div class="mx-auto max-w-7xl px-6 py-12 md:flex md:items-center md:justify-between lg:px-8">
-                            <div class="flex justify-center space-x-6 md:order-2">
-                                <a class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" href="#">
-                                    <span class="sr-only">Facebook</span>
-                                    <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path clip-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" fill-rule="evenodd"></path></svg>
-                                </a>
-                                <a class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" href="#">
-                                    <span class="sr-only">Twitter</span>
-                                    <svg aria-hidden="true" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path></svg>
-                                </a>
-                            </div>
-                            <div class="mt-8 md:order-1 md:mt-0">
-                                <p class="text-center text-xs leading-5 text-gray-500 dark:text-gray-400">© 2024 Road Raksha. All rights reserved.</p>
-                            </div>
-                        </div>
-                    </footer>
+                    </div>
                 </div>
             </div>
-        </div>
+        </header>
+
+        <main style="flex: 1 1 0%;">
+            <section class="hero">
+                <img class="hero-bg" src="{% static 'images\index_road.png' %}" alt="Scenic road background"/>
+                <div class="hero-overlay"></div>
+                <div class="max-w-7xl hero-container">
+                    <div class="hero-content">
+                        <h1 class="hero-h1">Safer Roads, Together.</h1>
+                        <h2 class="hero-h2">Report potholes and water issues in seconds. Navigate smarter with real-time road hazard data.</h2>
+                        <div class="btn-flex">
+                            <button class="app-btn btn-blue">Download on the App Store</button>
+                            <button class="app-btn btn-white">Get it on Google Play</button>
+                        </div>
+                    </div>
+                    <div class="hero-image-box">
+                        <img src="{% static 'images\index_phone.png' %}"  alt="Mobile map showing road hazards"/>
+                    </div>
+                </div>
+            </section>
+
+            <section class="features-section">
+                <div class="max-w-7xl">
+                    <div class="features-header">
+                        <h2 class="features-h2">Making Every Journey Safer</h2>
+                        <p class="features-p">Road Raksha empowers you to improve your community's infrastructure with just a few taps. See how our key features contribute to better, safer roads for everyone.</p>
+                    </div>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <span class="material-symbols-outlined feature-icon">photo_camera</span>
+                            <h3>Report Instantly</h3>
+                            <p>Quickly snap a photo, add details, and report road potholes or water issues directly from the app.</p>
+                        </div>
+                        <div class="feature-card">
+                            <span class="material-symbols-outlined feature-icon">map</span>
+                            <h3>Navigate with Confidence</h3>
+                            <p>Our interactive map shows you reported hazards in real-time, helping you plan safer routes.</p>
+                        </div>
+                        <div class="feature-card">
+                            <span class="material-symbols-outlined feature-icon">groups</span>
+                            <h3>Community Powered</h3>
+                            <p>Join a network of responsible citizens and authorities working together to improve road safety.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="how-section" id="how_it_works">
+                <div class="max-w-7xl">
+                    <h2 class="how-h2">How It Works</h2>
+                    <div class="steps-grid">
+                        <div class="step-col">
+                            <div class="step-bubble"><span class="material-symbols-outlined">visibility</span></div>
+                            <div class="step-line"></div>
+                        </div>
+                        <div class="step-content">
+                            <p class="step-tag">Step 1</p>
+                            <p class="step-title">Spot & Snap</p>
+                            <p class="step-desc">See a pothole or a water leak? Open the app and safely take a picture to start your report.</p>
+                        </div>
+
+                        <div class="step-col">
+                            <div class="step-line"></div>
+                            <div class="step-bubble"><span class="material-symbols-outlined">pin_drop</span></div>
+                            <div class="step-line"></div>
+                        </div>
+                        <div class="step-content">
+                            <p class="step-tag">Step 2</p>
+                            <p class="step-title">Pin Location & Submit</p>
+                            <p class="step-desc">Confirm the location with GPS, add a few details, and submit. The report is instantly sent to the relevant authorities.</p>
+                        </div>
+
+                        <div class="step-col">
+                            <div class="step-line"></div>
+                            <div class="step-bubble"><span class="material-symbols-outlined">shield</span></div>
+                        </div>
+                        <div class="step-content">
+                            <p class="step-tag">Step 3</p>
+                            <p class="step-tag" style="margin-top: 5px; color: var(--text-gray-500);">Completion</p>
+                            <p class="step-title">Drive Safer</p>
+                            <p class="step-desc">The hazard is now visible on the public map, helping other drivers avoid the area until it's fixed.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="max-w-7xl footer-inner">
+                <div class="footer-socials">
+                    <a href="#" class="social-link">
+                        <svg style="width: 1.5rem; height: 1.5rem;" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path></svg>
+                    </a>
+                    <a href="#" class="social-link">
+                        <svg style="width: 1.5rem; height: 1.5rem;" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path></svg>
+                    </a>
+                </div>
+                <p class="copyright">© 2024 Road Raksha. All rights reserved.</p>
+            </div>
+        </footer>
     </div>
 </body>
 </html>
