@@ -29,5 +29,6 @@ urlpatterns = [
     path('adminpanel/', views.adminpanel ,name='adminpanel'),
     path('adminpanel/adminpanel_valid/', views.adminpanel_valid ,name='adminpanel_valid'),
     path('report/resolve/<uuid:report_id>/', views.resolve_report, name='resolve_report'),
+    path('adminpanel/ad_verify/<uuid:report_id>/', views.admin_verified_report, name='admin_verified_report'),
 
 ]

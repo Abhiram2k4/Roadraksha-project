@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from .models import AuthorityProfile, AdminUser, Report
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.db.models import Q
+from django.db.models import Q,Case, When, Value, IntegerField
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 
@@ -142,7 +142,7 @@ def adminlogin(request):
     return render(request, 'adminlogin.html')
  
 
-def adminpanel_valid(request):
+def adminpanel_valid(request):   #For authority registration validating page
     # 🔹 Handle ACCEPT / REJECT
     if request.method == "POST":
         profile_id = request.POST.get("profile_id")
@@ -175,7 +175,26 @@ def adminpanel_valid(request):
     return render(request, "adminpanel_valid.html", context) 
 
 def adminpanel(request):
-    return render(request,'adminpanel.html') 
+    reports = (
+        Report.objects
+        .annotate(
+            sort_order=Case(
+                When(admin_verified=False, then=Value(0)),
+                When(admin_verified=True, then=Value(1)),
+                output_field=IntegerField()
+            )
+        )
+        .order_by('sort_order', '-reported_at')
+    )
+
+    context = {
+        'reports': reports,
+        'total_reports': Report.objects.count(),
+        'open_reports': Report.objects.filter(status=False).count(),
+        'closed_reports': Report.objects.filter(status=True).count(),
+    }
+
+    return render(request,'adminpanel.html',context) 
 
 
 
@@ -213,3 +232,10 @@ def resolve_report(request, report_id):
     report.status = True
     report.save()
     return redirect(request.META.get('HTTP_REFERER', 'authority_panel'))
+
+@require_POST
+def admin_verified_report(request, report_id):
+    report = get_object_or_404(Report, report_id=report_id)
+    report.admin_verified = True
+    report.save()
+    return redirect(request.META.get('HTTP_REFERER', 'adminpanel'))

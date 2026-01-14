@@ -49,8 +49,8 @@ class Report(models.Model):
 
     description = models.TextField()
 
-    status = models.BooleanField(default=False)  # False = Open, True = Closed
-
+    status = models.BooleanField(default=False)  # False = Open, True = Closed (by authorities)
+    admin_verified = models.BooleanField(default=False) #for admin verification of report
     reported_at = models.DateTimeField(auto_now_add=True)
 
     latitude = models.DecimalField(max_digits=9, decimal_places=6)
